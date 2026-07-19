@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  /* Wild Landscape Co. brand palette — placeholder values, swap for real brand colors */
+  --color-moss-50: #f3f6f2;
+  --color-moss-100: #e2eadf;
+  --color-moss-200: #c5d6bf;
+  --color-moss-300: #9fbb94;
+  --color-moss-400: #779c6b;
+  --color-moss-500: #587f4c;
+  --color-moss-600: #43653a;
+  --color-moss-700: #365030;
+  --color-moss-800: #2d4029;
+  --color-moss-900: #263523;
+  --color-clay-500: #b1673f;
+  --color-sand-50: #faf8f4;
+  --color-sand-100: #f2ede2;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-sand-50 text-moss-900 font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-moss-900;
+  }
+
+  a {
+    @apply transition-colors;
+  }
+}

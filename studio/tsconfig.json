@@ -1,0 +1,4 @@
+{
+  "extends": "@sanity/cli/tsconfig",
+  "include": ["./**/*.ts", "./**/*.tsx"]
+}

@@ -1,0 +1,24 @@
+---
+export const prerender = true;
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ContactForm from "../components/ContactForm.tsx";
+---
+
+<BaseLayout
+  title="Contact"
+  description="Get in touch with Wild Landscape Co. for garden design, landscaping and maintenance quotes on the Sunshine Coast."
+  path="/contact"
+>
+  <section class="mx-auto max-w-2xl px-6 py-16">
+    <h1 class="text-4xl font-semibold">Get in touch</h1>
+    <p class="mt-4 text-moss-600">
+      Tell us a bit about your space and what you're after — we'll reply
+      within a couple of business days.
+    </p>
+
+    <div class="relative mt-10">
+      <ContactForm client:load />
+    </div>
+  </section>
+</BaseLayout>

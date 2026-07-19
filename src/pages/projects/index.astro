@@ -1,0 +1,82 @@
+---
+export const prerender = true;
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import { sanityClient, sanityConfigured, urlFor } from "../../lib/sanity";
+import { allProjectsQuery } from "../../lib/queries";
+import type { Project } from "../../lib/types";
+import { placeholderProjects } from "../../data/placeholderProjects";
+
+let projects: {
+  slug: string;
+  title: string;
+  category?: string;
+  location?: string;
+  summary?: string;
+  imageUrl: string;
+  imageAlt: string;
+}[] = [];
+
+if (sanityConfigured) {
+  const results = await sanityClient.fetch<Project[]>(allProjectsQuery);
+  projects = results.map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    category: p.category,
+    location: p.location,
+    summary: p.summary,
+    imageUrl: p.coverImage ? urlFor(p.coverImage).width(800).height(600).url() : "",
+    imageAlt: p.title,
+  }));
+}
+
+const usingPlaceholders = projects.length === 0;
+if (usingPlaceholders) {
+  projects = placeholderProjects.map((p) => ({
+    slug: p.slug,
+    title: p.title,
+    category: p.category,
+    location: p.location,
+    summary: p.summary,
+    imageUrl: p.coverImageUrl,
+    imageAlt: p.title,
+  }));
+}
+---
+
+<BaseLayout
+  title="Projects"
+  description="Browse recent garden design, landscaping, hardscaping and maintenance projects by Wild Landscape Co. on the Sunshine Coast."
+  path="/projects"
+>
+  <section class="mx-auto max-w-6xl px-6 pt-16 pb-8">
+    <h1 class="text-4xl font-semibold">Projects</h1>
+    <p class="mt-4 max-w-2xl text-moss-600">
+      A selection of gardens we've designed, built and maintained across the
+      Sunshine Coast.
+    </p>
+    {usingPlaceholders && (
+      <p class="mt-4 rounded-lg border border-clay-500/30 bg-clay-500/10 px-4 py-3 text-sm text-clay-500">
+        Showing placeholder projects — connect Sanity and add real projects
+        to replace these. See the README for setup steps.
+      </p>
+    )}
+  </section>
+
+  <section class="mx-auto max-w-6xl px-6 pb-24">
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map((project) => (
+        <ProjectCard
+          title={project.title}
+          slug={project.slug}
+          category={project.category}
+          location={project.location}
+          summary={project.summary}
+          imageUrl={project.imageUrl}
+          imageAlt={project.imageAlt}
+        />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

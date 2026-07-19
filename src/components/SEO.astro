@@ -1,0 +1,53 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  /** Absolute or root-relative path, e.g. "/projects/tin-can-bay-courtyard" */
+  path?: string;
+  /** Absolute image URL for social sharing */
+  image?: string;
+  type?: "website" | "article";
+}
+
+const {
+  title,
+  description,
+  path = Astro.url.pathname,
+  image,
+  type = "website",
+} = Astro.props;
+
+const canonicalURL = new URL(path, Astro.site);
+const ogImage = image ?? new URL("/og-default.jpg", Astro.site).toString();
+
+const businessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LandscapingBusiness",
+  name: "Wild Landscape Co.",
+  description:
+    "Garden design, landscaping and maintenance on the Sunshine Coast.",
+  url: Astro.site?.toString(),
+  areaServed: {
+    "@type": "Place",
+    name: "Sunshine Coast, QLD",
+  },
+};
+---
+
+<title>{title} | Wild Landscape Co.</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+
+<meta property="og:type" content={type} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:site_name" content="Wild Landscape Co." />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<script is:inline type="application/ld+json" set:html={JSON.stringify(businessJsonLd)} />

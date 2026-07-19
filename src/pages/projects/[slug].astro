@@ -1,0 +1,110 @@
+---
+export const prerender = true;
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { sanityClient, sanityConfigured, urlFor } from "../../lib/sanity";
+import { allProjectSlugsQuery, projectBySlugQuery } from "../../lib/queries";
+import type { Project } from "../../lib/types";
+import { placeholderProjects } from "../../data/placeholderProjects";
+
+export async function getStaticPaths() {
+  if (sanityConfigured) {
+    const slugs = await sanityClient.fetch<string[]>(allProjectSlugsQuery);
+    if (slugs.length > 0) {
+      return slugs.map((slug) => ({ params: { slug } }));
+    }
+  }
+  return placeholderProjects.map((p) => ({ params: { slug: p.slug } }));
+}
+
+const { slug } = Astro.params;
+
+let project:
+  | {
+      title: string;
+      category?: string;
+      location?: string;
+      summary?: string;
+      completedAt?: string;
+      coverImageUrl: string;
+      galleryUrls: string[];
+    }
+  | undefined;
+
+if (sanityConfigured) {
+  const result = await sanityClient.fetch<Project | null>(projectBySlugQuery, {
+    slug,
+  });
+  if (result) {
+    project = {
+      title: result.title,
+      category: result.category,
+      location: result.location,
+      summary: result.summary,
+      completedAt: result.completedAt,
+      coverImageUrl: result.coverImage
+        ? urlFor(result.coverImage).width(1600).url()
+        : "",
+      galleryUrls: (result.gallery ?? []).map((img) =>
+        urlFor(img).width(1200).url()
+      ),
+    };
+  }
+}
+
+if (!project) {
+  const placeholder = placeholderProjects.find((p) => p.slug === slug);
+  if (placeholder) {
+    project = {
+      title: placeholder.title,
+      category: placeholder.category,
+      location: placeholder.location,
+      summary: placeholder.summary,
+      completedAt: placeholder.completedAt,
+      coverImageUrl: placeholder.coverImageUrl,
+      galleryUrls: [],
+    };
+  }
+}
+
+if (!project) {
+  return Astro.redirect("/projects");
+}
+---
+
+<BaseLayout
+  title={project.title}
+  description={project.summary ?? `${project.title} — a project by Wild Landscape Co.`}
+  path={`/projects/${slug}`}
+>
+  <article class="mx-auto max-w-4xl px-6 pt-16 pb-24">
+    <a href="/projects" class="text-sm font-semibold text-moss-600 hover:text-moss-800">
+      &larr; All projects
+    </a>
+
+    <h1 class="mt-4 text-4xl font-semibold">{project.title}</h1>
+    <p class="mt-2 text-moss-500">
+      {[project.location, project.category].filter(Boolean).join(" · ")}
+    </p>
+
+    {project.coverImageUrl && (
+      <img
+        src={project.coverImageUrl}
+        alt={project.title}
+        class="mt-8 w-full rounded-2xl object-cover"
+      />
+    )}
+
+    {project.summary && (
+      <p class="mt-8 text-lg text-moss-700">{project.summary}</p>
+    )}
+
+    {project.galleryUrls.length > 0 && (
+      <div class="mt-10 grid gap-4 sm:grid-cols-2">
+        {project.galleryUrls.map((url) => (
+          <img src={url} alt={project.title} class="rounded-xl object-cover" />
+        ))}
+      </div>
+    )}
+  </article>
+</BaseLayout>
