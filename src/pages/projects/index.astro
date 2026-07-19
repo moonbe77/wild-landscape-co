@@ -2,7 +2,9 @@
 export const prerender = true;
 
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import ProjectCard from "../../components/ProjectCard.astro";
+import GalleryTile from "../../components/GalleryTile.astro";
+import SocialBand from "../../components/SocialBand.astro";
+import CtaBanner from "../../components/CtaBanner.astro";
 import { sanityClient, sanityConfigured, urlFor } from "../../lib/sanity";
 import { allProjectsQuery } from "../../lib/queries";
 import type { Project } from "../../lib/types";
@@ -11,9 +13,7 @@ import { placeholderProjects } from "../../data/placeholderProjects";
 let projects: {
   slug: string;
   title: string;
-  category?: string;
   location?: string;
-  summary?: string;
   imageUrl: string;
   imageAlt: string;
 }[] = [];
@@ -23,10 +23,8 @@ if (sanityConfigured) {
   projects = results.map((p) => ({
     slug: p.slug,
     title: p.title,
-    category: p.category,
     location: p.location,
-    summary: p.summary,
-    imageUrl: p.coverImage ? urlFor(p.coverImage).width(800).height(600).url() : "",
+    imageUrl: p.coverImage ? urlFor(p.coverImage).width(1000).url() : "",
     imageAlt: p.title,
   }));
 }
@@ -36,47 +34,96 @@ if (usingPlaceholders) {
   projects = placeholderProjects.map((p) => ({
     slug: p.slug,
     title: p.title,
-    category: p.category,
     location: p.location,
-    summary: p.summary,
     imageUrl: p.coverImageUrl,
     imageAlt: p.title,
   }));
 }
+
+// First tile anchors the "Inspire" intro row; the rest flow into the
+// staggered masonry gallery below.
+const [heroTile, ...restTiles] = projects;
+
+const socialImages = projects.slice(0, 4).map((p) => ({
+  url: p.imageUrl,
+  alt: p.imageAlt,
+}));
 ---
 
 <BaseLayout
-  title="Projects"
+  title="Our Work"
   description="Browse recent garden design, landscaping, hardscaping and maintenance projects by Wild Landscape Co. on the Sunshine Coast."
   path="/projects"
 >
-  <section class="mx-auto max-w-6xl px-6 pt-16 pb-8">
-    <h1 class="text-4xl font-semibold">Projects</h1>
-    <p class="mt-4 max-w-2xl text-moss-600">
-      A selection of gardens we've designed, built and maintained across the
-      Sunshine Coast.
-    </p>
+  <section class="mx-auto max-w-6xl px-6 pt-16 pb-4 text-center">
+    <h1 class="font-sans text-3xl font-medium tracking-brand uppercase text-moss-800">
+      Our Work
+    </h1>
     {usingPlaceholders && (
-      <p class="mt-4 rounded-lg border border-clay-500/30 bg-clay-500/10 px-4 py-3 text-sm text-clay-500">
+      <p class="mx-auto mt-4 max-w-md rounded-lg border border-clay-500/30 bg-clay-500/10 px-4 py-3 text-sm text-clay-500">
         Showing placeholder projects — connect Sanity and add real projects
         to replace these. See the README for setup steps.
       </p>
     )}
   </section>
 
-  <section class="mx-auto max-w-6xl px-6 pb-24">
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {projects.map((project) => (
-        <ProjectCard
-          title={project.title}
-          slug={project.slug}
-          category={project.category}
-          location={project.location}
-          summary={project.summary}
-          imageUrl={project.imageUrl}
-          imageAlt={project.imageAlt}
+  {heroTile && (
+    <section class="mx-auto max-w-6xl px-6 py-12">
+      <div class="grid items-center gap-10 sm:grid-cols-2">
+        <div>
+          <h2 class="font-display text-5xl italic text-moss-600">Inspire.</h2>
+          <p class="mt-6 max-w-md text-moss-600">
+            At Wild Landscape Co. we begin by inspiring your vision. Through
+            creative design consultations, we bring your ideas to life,
+            offering innovative concepts tailored to your style and space. We
+            focus on transforming your dreams into a reality, blending
+            nature with elegance.
+          </p>
+        </div>
+        <GalleryTile
+          href={`/projects/${heroTile.slug}`}
+          imageUrl={heroTile.imageUrl}
+          imageAlt={heroTile.imageAlt}
+          label={heroTile.location}
         />
+      </div>
+    </section>
+  )}
+
+  <section class="mx-auto max-w-6xl px-6 pb-4">
+    <div class="columns-1 gap-6 sm:columns-2">
+      {restTiles.map((project, i) => (
+        <>
+          <GalleryTile
+            href={`/projects/${project.slug}`}
+            imageUrl={project.imageUrl}
+            imageAlt={project.imageAlt}
+            label={project.location}
+          />
+          {i === 0 && (
+            <div class="mb-6 flex h-full [break-inside:avoid] items-center rounded-2xl bg-moss-50 p-8">
+              <p class="text-moss-600">
+                We bring your design to life with expert craftsmanship. Our
+                skilled team handles every aspect of construction, from
+                hardscaping to planting, to the highest standard. We pride
+                ourselves on quality, precision, and attention to detail
+                throughout the build.
+              </p>
+            </div>
+          )}
+        </>
       ))}
     </div>
   </section>
+
+  {socialImages.length > 0 && <SocialBand images={socialImages} />}
+
+  <CtaBanner
+    eyebrow="Join the Journey"
+    title="Transform your landscape on the Sunshine Coast."
+    buttonLabel="Experience Luxury · Contact Us"
+    buttonHref="/contact"
+    imageUrl="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1600&q=80"
+    imageAlt="Landscaped pool deck at sunset"
+  />
 </BaseLayout>

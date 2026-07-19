@@ -1,0 +1,33 @@
+---
+interface Props {
+  href: string;
+  imageUrl: string;
+  imageAlt: string;
+  label?: string;
+}
+
+const { href, imageUrl, imageAlt, label } = Astro.props;
+---
+
+<a
+  href={href}
+  class="group relative mb-6 block w-full overflow-hidden rounded-2xl bg-moss-100 [break-inside:avoid]"
+>
+  <img
+    src={imageUrl}
+    alt={imageAlt}
+    loading="lazy"
+    class="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
+  />
+  {label && (
+    <div
+      class="pointer-events-none absolute inset-0 flex items-center justify-center bg-moss-900/0 transition-colors duration-300 group-hover:bg-moss-900/20"
+    >
+      <span
+        class="font-sans text-sm font-medium tracking-brand uppercase text-white opacity-0 [text-shadow:0_1px_8px_rgba(0,0,0,0.4)] transition-opacity duration-300 group-hover:opacity-100"
+      >
+        {label}
+      </span>
+    </div>
+  )}
+</a>
