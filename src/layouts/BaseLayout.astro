@@ -8,9 +8,11 @@ interface Props {
   title: string;
   description: string;
   path?: string;
+  /** Passed through to Header — see Header.astro for when to use "transparent". */
+  headerVariant?: "solid" | "transparent";
 }
 
-const { title, description, path } = Astro.props;
+const { title, description, path, headerVariant = "solid" } = Astro.props;
 ---
 
 <!doctype html>
@@ -23,13 +25,13 @@ const { title, description, path } = Astro.props;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,400..600&family=Jost:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,400..600&family=Jost:wght@400;500;600;700&family=Sacramento&display=swap"
       rel="stylesheet"
     />
     <SEO title={title} description={description} path={path} />
   </head>
   <body>
-    <Header />
+    <Header variant={headerVariant} />
     <main>
       <slot />
     </main>

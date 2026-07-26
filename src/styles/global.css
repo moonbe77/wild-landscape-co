@@ -22,6 +22,7 @@
 
   --font-sans: "Jost", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-script: "Sacramento", cursive;
 }
 
 @layer base {

@@ -11,6 +11,10 @@ node_modules/
 
 # sanity
 studio/dist/
+studio/.sanity/
+
+# vercel    
+.vercel
 
 # logs
 npm-debug.log*
