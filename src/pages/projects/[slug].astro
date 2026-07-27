@@ -27,7 +27,9 @@ let project:
       summary?: string;
       completedAt?: string;
       coverImageUrl: string;
+      coverImageAlt: string;
       galleryUrls: string[];
+      galleryAlts: string[];
     }
   | undefined;
 
@@ -45,9 +47,11 @@ if (sanityConfigured) {
       coverImageUrl: result.coverImage
         ? urlFor(result.coverImage).width(1600).url()
         : "",
+      coverImageAlt: result.coverImage?.alt || result.title,
       galleryUrls: (result.gallery ?? []).map((img) =>
         urlFor(img).width(1200).url()
       ),
+      galleryAlts: (result.gallery ?? []).map((img) => img.alt || result.title),
     };
   }
 }
@@ -62,7 +66,9 @@ if (!project) {
       summary: placeholder.summary,
       completedAt: placeholder.completedAt,
       coverImageUrl: placeholder.coverImageUrl,
+      coverImageAlt: placeholder.title,
       galleryUrls: [],
+      galleryAlts: [],
     };
   }
 }
@@ -77,7 +83,7 @@ if (!project) {
   description={project.summary ?? `${project.title} — a project by Wild Landscape Co.`}
   path={`/projects/${slug}`}
 >
-  <article class="mx-auto max-w-4xl px-6 pt-16 pb-24">
+  <article data-reveal class="mx-auto max-w-4xl px-6 pt-16 pb-24">
     <a href="/projects" class="text-sm font-semibold text-moss-600 hover:text-moss-800">
       &larr; All projects
     </a>
@@ -90,7 +96,7 @@ if (!project) {
     {project.coverImageUrl && (
       <img
         src={project.coverImageUrl}
-        alt={project.title}
+        alt={project.coverImageAlt}
         class="mt-8 w-full rounded-2xl object-cover"
       />
     )}
@@ -101,8 +107,8 @@ if (!project) {
 
     {project.galleryUrls.length > 0 && (
       <div class="mt-10 grid gap-4 sm:grid-cols-2">
-        {project.galleryUrls.map((url) => (
-          <img src={url} alt={project.title} class="rounded-xl object-cover" />
+        {project.galleryUrls.map((url, index) => (
+          <img src={url} alt={project.galleryAlts[index]} class="rounded-xl object-cover" />
         ))}
       </div>
     )}

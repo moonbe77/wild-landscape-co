@@ -93,7 +93,8 @@ Per the proposal, the next steps are:
 2. Add each project as a **Project** entry in the Studio (`pnpm studio:dev`).
 3. Fill in the **About** page copy in `src/pages/about.astro` (currently
    placeholder text) and the **Site Settings** document in Sanity.
-4. Add a real Open Graph share image at `public/og-default.jpg`
+4. Replace `public/og-default.png` with the approved Open Graph share image
+   when it is available (1200×630px recommended).
    (1200×630px recommended).
 
 ## Not included yet (future add-ons, per the proposal)

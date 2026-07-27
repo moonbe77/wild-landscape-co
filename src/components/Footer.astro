@@ -1,4 +1,8 @@
 ---
+import { sanityClient, sanityConfigured } from "../lib/sanity";
+import { siteSettingsQuery } from "../lib/queries";
+import type { SiteSettings } from "../lib/types";
+
 const year = new Date().getFullYear();
 
 const pageLinks = [
@@ -7,6 +11,26 @@ const pageLinks = [
   { href: "/projects", label: "Our Work" },
   { href: "/contact", label: "Contact" },
 ];
+
+const fallbackSettings: Required<Pick<SiteSettings, "email" | "address">> & {
+  socialLinks: NonNullable<SiteSettings["socialLinks"]>;
+} = {
+  email: "hello@wildlandscapeco.com.au",
+  address: "Sunshine Coast, Queensland",
+  socialLinks: [
+    { platform: "Instagram", url: "https://www.instagram.com/wildlandscapeco" },
+    { platform: "Facebook", url: "https://www.facebook.com/wildlandscapeco" },
+  ],
+};
+
+const settings = sanityConfigured
+  ? await sanityClient.fetch<SiteSettings | null>(siteSettingsQuery)
+  : null;
+const email = settings?.email || fallbackSettings.email;
+const address = settings?.address || fallbackSettings.address;
+const socialLinks = settings?.socialLinks?.length
+  ? settings.socialLinks
+  : fallbackSettings.socialLinks;
 ---
 
 <footer class="mt-24 bg-moss-900 text-moss-100">
@@ -32,26 +56,18 @@ const pageLinks = [
           Socials
         </p>
         <ul class="mt-3 space-y-2 text-sm text-moss-200">
-          <li>
-            <a
-              href="https://www.instagram.com/wildlandscapeco"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="hover:text-white"
-            >
-              Instagram
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.facebook.com/wildlandscapeco"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="hover:text-white"
-            >
-              Facebook
-            </a>
-          </li>
+          {socialLinks.map((social) => (
+            <li>
+              <a
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hover:text-white"
+              >
+                {social.platform}
+              </a>
+            </li>
+          ))}
         </ul>
       </div>
 
@@ -60,14 +76,14 @@ const pageLinks = [
           Email
         </p>
         <p class="mt-3 text-sm text-moss-200">
-          <a href="mailto:hello@wildlandscapeco.com.au" class="hover:text-white">
-            hello@wildlandscapeco.com.au
+          <a href={`mailto:${email}`} class="hover:text-white">
+            {email}
           </a>
         </p>
         <p class="mt-4 text-xs font-semibold tracking-brand uppercase text-moss-300">
           Location
         </p>
-        <p class="mt-3 text-sm text-moss-200">Sunshine Coast, Queensland</p>
+        <p class="mt-3 text-sm text-moss-200">{address}</p>
       </div>
     </div>
   </div>

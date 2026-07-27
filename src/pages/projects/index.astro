@@ -25,12 +25,11 @@ if (sanityConfigured) {
     title: p.title,
     location: p.location,
     imageUrl: p.coverImage ? urlFor(p.coverImage).width(1000).url() : "",
-    imageAlt: p.title,
+    imageAlt: p.coverImage?.alt || p.title,
   }));
 }
 
-const usingPlaceholders = projects.length === 0;
-if (usingPlaceholders) {
+if (projects.length === 0) {
   projects = placeholderProjects.map((p) => ({
     slug: p.slug,
     title: p.title,
@@ -59,16 +58,10 @@ const socialImages = projects.slice(0, 4).map((p) => ({
     <h1 class="font-sans text-3xl font-medium tracking-brand uppercase text-moss-800">
       Our Work
     </h1>
-    {usingPlaceholders && (
-      <p class="mx-auto mt-4 max-w-md rounded-lg border border-clay-500/30 bg-clay-500/10 px-4 py-3 text-sm text-clay-500">
-        Showing placeholder projects — connect Sanity and add real projects
-        to replace these. See the README for setup steps.
-      </p>
-    )}
   </section>
 
   {heroTile && (
-    <section class="mx-auto max-w-6xl px-6 py-12">
+    <section data-reveal class="mx-auto max-w-6xl px-6 py-12">
       <div class="grid items-center gap-10 sm:grid-cols-2">
         <div>
           <h2 class="font-display text-5xl italic text-moss-600">Inspire.</h2>
@@ -90,7 +83,7 @@ const socialImages = projects.slice(0, 4).map((p) => ({
     </section>
   )}
 
-  <section class="mx-auto max-w-6xl px-6 pb-4">
+  <section data-reveal class="mx-auto max-w-6xl px-6 pb-4">
     <div class="columns-1 gap-6 sm:columns-2">
       {restTiles.map((project, i) => (
         <>

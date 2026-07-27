@@ -30,7 +30,7 @@ if (sanityConfigured) {
     location: p.location,
     summary: p.summary,
     imageUrl: p.coverImage ? urlFor(p.coverImage).width(800).height(600).url() : "",
-    imageAlt: p.title,
+    imageAlt: p.coverImage?.alt || p.title,
   }));
 }
 
@@ -60,7 +60,7 @@ if (featured.length === 0) {
     secondaryCta={{ label: "View all projects", href: "/projects" }}
   />
 
-  <section class="mx-auto max-w-3xl px-6 py-16 text-center sm:py-24">
+  <section data-reveal class="mx-auto max-w-3xl px-6 py-16 text-center sm:py-24">
     <p class="text-xs font-medium tracking-brand uppercase text-moss-500">
       Who we are
     </p>
@@ -108,7 +108,7 @@ if (featured.length === 0) {
     />
   </div>
 
-  <section class="mx-auto max-w-6xl px-6 py-16 sm:py-24">
+  <section data-reveal class="mx-auto max-w-6xl px-6 py-16 sm:py-24">
     <div class="flex items-end justify-between">
       <h2 class="text-2xl font-semibold">Recent projects</h2>
       <a href="/projects" class="text-sm font-semibold text-moss-600 hover:text-moss-800">

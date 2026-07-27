@@ -1,5 +1,12 @@
 import groq from "groq";
 
+const imageFields = /* groq */ `
+  asset,
+  alt,
+  crop,
+  hotspot
+`;
+
 /** All projects, most recently completed first. */
 export const allProjectsQuery = groq`
   *[_type == "project"] | order(completedAt desc) {
@@ -9,9 +16,9 @@ export const allProjectsQuery = groq`
     category,
     location,
     summary,
-    coverImage,
-    beforeImage,
-    afterImage,
+    coverImage { ${imageFields} },
+    beforeImage { ${imageFields} },
+    afterImage { ${imageFields} },
     completedAt,
     featured
   }
@@ -26,7 +33,7 @@ export const featuredProjectsQuery = groq`
     category,
     location,
     summary,
-    coverImage
+    coverImage { ${imageFields} }
   }
 `;
 
@@ -39,10 +46,10 @@ export const projectBySlugQuery = groq`
     category,
     location,
     summary,
-    coverImage,
-    beforeImage,
-    afterImage,
-    gallery,
+    coverImage { ${imageFields} },
+    beforeImage { ${imageFields} },
+    afterImage { ${imageFields} },
+    gallery[] { ${imageFields} },
     completedAt
   }
 `;

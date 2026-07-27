@@ -1,6 +1,7 @@
 /** Minimal shape of a Sanity image field — enough for @sanity/image-url. */
 export interface SanityImage {
   _type: "image";
+  alt?: string;
   asset: {
     _ref: string;
     _type: "reference";

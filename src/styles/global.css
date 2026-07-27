@@ -46,6 +46,28 @@
   }
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) {
+    animation: 180ms ease-in both fade-out;
+  }
+
+  ::view-transition-new(root) {
+    animation: 260ms ease-out both fade-in;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
 @layer utilities {
   /* Wide letter-spacing used for the wordmark and small eyebrow labels,
      matching the reference design's condensed tracked-out headings. */
