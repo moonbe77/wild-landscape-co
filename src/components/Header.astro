@@ -1,20 +1,20 @@
 ---
 interface Props {
-  /**
-   * "transparent" floats a white-text header over a dark hero (video/photo)
-   * directly beneath it — only use on pages that guarantee a dark top
-   * section, e.g. the home page video hero. Every other page should use
-   * the default "solid" header so nav text stays legible.
-   */
-  variant?: "solid" | "transparent";
+	/**
+	 * "transparent" floats a white-text header over a dark hero (video/photo)
+	 * directly beneath it — only use on pages that guarantee a dark top
+	 * section, e.g. the home page video hero. Every other page should use
+	 * the default "solid" header so nav text stays legible.
+	 */
+	variant?: "solid" | "transparent";
 }
 
 const { variant = "solid" } = Astro.props;
 
 const navLinks = [
-  { href: "/about", label: "About" },
-  { href: "/projects", label: "Projects" },
-  { href: "/contact", label: "Contact" },
+	{ href: "/about", label: "About" },
+	{ href: "/projects", label: "Projects" },
+	{ href: "/contact", label: "Contact" },
 ];
 
 const currentPath = Astro.url.pathname;
@@ -31,26 +31,34 @@ const isTransparent = variant === "transparent";
 >
   <div
     class:list={[
-      "mx-auto flex max-w-7xl items-center justify-between px-6",
+      "mx-auto flex max-w-7xl items-center justify-between px-6 sm:grid sm:grid-cols-[auto_1fr_auto] sm:gap-8",
       isTransparent ? "py-6 sm:px-10" : "py-5",
     ]}
   >
-    <a
-      href="/"
-      class:list={[
-        "flex items-center gap-2",
-        isTransparent
-          ? "text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.35)]"
-          : "text-moss-800",
-      ]}
-    >
-      <span class="font-script text-4xl leading-none" aria-hidden="true">W</span>
-      <span class="font-sans text-sm font-medium tracking-brand uppercase">
+    <a href="/" class="flex shrink-0 items-center gap-2.5">
+      <img
+        src="/logo-mark-transparent.png"
+        alt="Wild Landscape Co."
+        width="512"
+        height="512"
+        class:list={[
+          "h-12 w-12 object-contain sm:h-14 sm:w-14",
+          isTransparent && "invert",
+        ]}
+      />
+      <span
+        class:list={[
+          "block whitespace-nowrap font-sans text-[0.68rem] font-medium tracking-brand uppercase sm:hidden lg:block",
+          isTransparent
+            ? "text-white [text-shadow:0_1px_6px_rgba(0,0,0,0.35)]"
+            : "text-moss-800",
+        ]}
+      >
         Wildlandscapeco.
       </span>
     </a>
 
-    <nav aria-label="Primary" class="hidden sm:block">
+    <nav aria-label="Primary" class="hidden justify-self-center sm:block">
       <ul
         class:list={[
           "flex items-center gap-8 text-xs font-medium tracking-brand uppercase",
@@ -94,23 +102,30 @@ const isTransparent = variant === "transparent";
       Get a quote
     </a>
 
-    <details class="relative sm:hidden">
+    <details class="group relative sm:hidden">
       <summary
         class:list={[
-          "flex h-10 w-10 list-none items-center justify-center rounded-full border text-xs font-semibold uppercase [&::-webkit-details-marker]:hidden",
+          "flex h-11 w-11 list-none items-center justify-center rounded-full border [&::-webkit-details-marker]:hidden",
           isTransparent
             ? "border-white/50 text-white"
             : "border-moss-200 text-moss-800",
         ]}
       >
-        <span class="sr-only">Open navigation</span>
-        <span aria-hidden="true">Menu</span>
+        <span class="sr-only">Toggle navigation</span>
+        <span aria-hidden="true" class="relative block h-4 w-5">
+          <span class="absolute left-0 top-0 h-px w-5 bg-current transition-transform duration-200 group-open:translate-y-[7px] group-open:rotate-45"></span>
+          <span class="absolute left-0 top-[7px] h-px w-5 bg-current transition-opacity duration-200 group-open:opacity-0"></span>
+          <span class="absolute bottom-0 left-0 h-px w-5 bg-current transition-transform duration-200 group-open:-translate-y-[7px] group-open:-rotate-45"></span>
+        </span>
       </summary>
       <nav
         aria-label="Mobile primary"
-        class="absolute right-0 mt-3 w-56 rounded-2xl bg-sand-50 p-3 shadow-xl ring-1 ring-moss-900/10"
+        class="absolute right-0 top-full mt-3 w-[min(18rem,calc(100vw-3rem))] origin-top-right rounded-2xl bg-sand-50 p-3 shadow-2xl ring-1 ring-moss-900/10"
       >
-        <ul class="space-y-1 text-sm font-medium text-moss-700">
+        <p class="px-3 pb-2 pt-1 text-[0.65rem] font-semibold tracking-brand uppercase text-moss-500">
+          Explore
+        </p>
+        <ul class="space-y-1 text-base font-medium text-moss-700">
           {navLinks.map((link) => {
             const isActive = currentPath.startsWith(link.href);
             return (
@@ -119,7 +134,7 @@ const isTransparent = variant === "transparent";
                   href={link.href}
                   aria-current={isActive ? "page" : undefined}
                   class:list={[
-                    "block rounded-xl px-3 py-2.5 hover:bg-moss-50",
+                    "block rounded-xl px-3 py-3 hover:bg-moss-50",
                     isActive && "bg-moss-50 text-moss-900",
                   ]}
                 >
@@ -131,7 +146,7 @@ const isTransparent = variant === "transparent";
           <li class="pt-2">
             <a
               href="/contact"
-              class="block rounded-xl bg-moss-900 px-3 py-2.5 text-center text-xs tracking-brand uppercase text-white"
+              class="block rounded-xl bg-moss-900 px-3 py-3 text-center text-xs tracking-brand uppercase text-white"
             >
               Get a quote
             </a>
