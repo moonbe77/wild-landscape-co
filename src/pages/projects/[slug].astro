@@ -25,6 +25,11 @@ let project:
       category?: string;
       location?: string;
       summary?: string;
+      projectScope?: string;
+      services?: string[];
+      propertyDescription?: string;
+      keyFeatures?: string[];
+      mapLocation?: { lat: number; lng: number };
       completedAt?: string;
       coverImageUrl: string;
       coverImageAlt: string;
@@ -43,6 +48,11 @@ if (sanityConfigured) {
       category: result.category,
       location: result.location,
       summary: result.summary,
+      projectScope: result.projectScope,
+      services: result.services,
+      propertyDescription: result.propertyDescription,
+      keyFeatures: result.keyFeatures,
+      mapLocation: result.mapLocation,
       completedAt: result.completedAt,
       coverImageUrl: result.coverImage
         ? urlFor(result.coverImage).width(1600).url()
@@ -76,6 +86,31 @@ if (!project) {
 if (!project) {
   return Astro.redirect("/projects");
 }
+
+const categoryLabels: Record<string, string> = {
+  "garden-design": "Garden Design",
+  landscaping: "Landscaping",
+  hardscaping: "Hardscaping",
+  maintenance: "Maintenance",
+};
+
+const completionDate = project.completedAt
+  ? new Intl.DateTimeFormat("en-AU", {
+      month: "long",
+      year: "numeric",
+    }).format(new Date(`${project.completedAt}T00:00:00`))
+  : undefined;
+const serviceLabel = project.services?.join(" · ") ??
+  (project.category ? categoryLabels[project.category] ?? project.category : undefined);
+const mapCoordinates = project.mapLocation
+  ? `${project.mapLocation.lat},${project.mapLocation.lng}`
+  : undefined;
+const mapEmbedUrl = mapCoordinates
+  ? `https://www.google.com/maps?q=${encodeURIComponent(mapCoordinates)}&z=14&output=embed`
+  : undefined;
+const mapLink = mapCoordinates
+  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapCoordinates)}`
+  : undefined;
 ---
 
 <BaseLayout
@@ -89,28 +124,96 @@ if (!project) {
     </a>
 
     <h1 class="mt-4 text-4xl font-semibold">{project.title}</h1>
-    <p class="mt-2 text-moss-500">
-      {[project.location, project.category].filter(Boolean).join(" · ")}
-    </p>
+    {project.projectScope && (
+      <p class="mt-5 max-w-3xl text-lg font-medium leading-relaxed text-moss-800">
+        <span class="font-semibold">Project scope — </span>{project.projectScope}
+      </p>
+    )}
 
     {project.coverImageUrl && (
       <img
         src={project.coverImageUrl}
         alt={project.coverImageAlt}
-        class="mt-8 w-full rounded-2xl object-cover"
+        class="mt-8 aspect-[4/3] w-full rounded-2xl object-cover"
       />
     )}
 
-    {project.summary && (
-      <p class="mt-8 text-lg text-moss-700">{project.summary}</p>
+    {(project.location || completionDate || serviceLabel) && (
+      <dl class="mt-8 grid gap-6 border-y border-moss-100 py-6 sm:grid-cols-3">
+        {project.location && (
+          <div>
+            <dt class="text-xs font-semibold tracking-brand uppercase text-moss-500">Location</dt>
+            <dd class="mt-2 text-sm font-medium text-moss-800">{project.location}</dd>
+          </div>
+        )}
+        {completionDate && (
+          <div>
+            <dt class="text-xs font-semibold tracking-brand uppercase text-moss-500">Completion</dt>
+            <dd class="mt-2 text-sm font-medium text-moss-800">{completionDate}</dd>
+          </div>
+        )}
+        {serviceLabel && (
+          <div>
+            <dt class="text-xs font-semibold tracking-brand uppercase text-moss-500">Service</dt>
+            <dd class="mt-2 text-sm font-medium text-moss-800">{serviceLabel}</dd>
+          </div>
+        )}
+      </dl>
+    )}
+
+    {(project.propertyDescription || project.summary) && (
+      <section class="mt-12 max-w-3xl">
+        <h2 class="text-2xl font-semibold">Property description</h2>
+        <p class="mt-4 whitespace-pre-line leading-relaxed text-moss-700">
+          {project.propertyDescription || project.summary}
+        </p>
+      </section>
+    )}
+
+    {project.keyFeatures && project.keyFeatures.length > 0 && (
+      <section class="mt-12 max-w-3xl">
+        <h2 class="text-2xl font-semibold">Key features</h2>
+        <ul class="mt-4 grid gap-2 text-moss-700 sm:grid-cols-2">
+          {project.keyFeatures.map((feature) => (
+            <li class="flex gap-3">
+              <span aria-hidden="true" class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-moss-500"></span>
+              {feature}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {mapEmbedUrl && mapLink && (
+      <section class="mt-12">
+        <h2 class="text-2xl font-semibold">Location</h2>
+        {project.location && <p class="mt-3 text-moss-700">{project.location}</p>}
+        <iframe
+          src={mapEmbedUrl}
+          title={`Map showing ${project.location || project.title}`}
+          loading="lazy"
+          class="mt-5 aspect-[16/9] w-full rounded-2xl border-0"
+        />
+        <a
+          href={mapLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-4 inline-block text-sm font-semibold text-moss-700 underline underline-offset-4 hover:text-moss-900"
+        >
+          View in Google Maps
+        </a>
+      </section>
     )}
 
     {project.galleryUrls.length > 0 && (
-      <div class="mt-10 grid gap-4 sm:grid-cols-2">
+      <section class="mt-12">
+        <h2 class="text-2xl font-semibold">Project gallery</h2>
+        <div class="mt-5 grid gap-4 sm:grid-cols-2">
         {project.galleryUrls.map((url, index) => (
           <img src={url} alt={project.galleryAlts[index]} class="rounded-xl object-cover" />
         ))}
-      </div>
+        </div>
+      </section>
     )}
   </article>
 </BaseLayout>

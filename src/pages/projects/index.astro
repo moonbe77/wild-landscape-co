@@ -10,33 +10,28 @@ import { allProjectsQuery } from "../../lib/queries";
 import type { Project } from "../../lib/types";
 import { placeholderProjects } from "../../data/placeholderProjects";
 
-let projects: {
-  slug: string;
-  title: string;
-  location?: string;
-  imageUrl: string;
-  imageAlt: string;
-}[] = [];
+let projects: Array<
+	Project & {
+		imageUrl: string;
+		imageAlt: string;
+	}
+> = [];
 
 if (sanityConfigured) {
-  const results = await sanityClient.fetch<Project[]>(allProjectsQuery);
-  projects = results.map((p) => ({
-    slug: p.slug,
-    title: p.title,
-    location: p.location,
-    imageUrl: p.coverImage ? urlFor(p.coverImage).width(1000).url() : "",
-    imageAlt: p.coverImage?.alt || p.title,
-  }));
+	const results = await sanityClient.fetch<Project[]>(allProjectsQuery);
+	projects = results.map((p) => ({
+		...p,
+		imageUrl: p.coverImage ? urlFor(p.coverImage).width(1000).url() : "",
+		imageAlt: p.coverImage?.alt || p.title,
+	}));
 }
 
 if (projects.length === 0) {
-  projects = placeholderProjects.map((p) => ({
-    slug: p.slug,
-    title: p.title,
-    location: p.location,
-    imageUrl: p.coverImageUrl,
-    imageAlt: p.title,
-  }));
+	projects = placeholderProjects.map((p) => ({
+		...p,
+		imageUrl: p.coverImageUrl,
+		imageAlt: p.title,
+	}));
 }
 
 // First tile anchors the "Inspire" intro row; the rest flow into the
@@ -44,8 +39,8 @@ if (projects.length === 0) {
 const [heroTile, ...restTiles] = projects;
 
 const socialImages = projects.slice(0, 4).map((p) => ({
-  url: p.imageUrl,
-  alt: p.imageAlt,
+	url: p.imageUrl,
+	alt: p.imageAlt,
 }));
 ---
 
@@ -61,29 +56,35 @@ const socialImages = projects.slice(0, 4).map((p) => ({
   </section>
 
   {heroTile && (
-    <section data-reveal class="mx-auto max-w-6xl px-6 py-12">
-      <div class="grid items-center gap-10 sm:grid-cols-2">
-        <div>
-          <h2 class="font-display text-5xl italic text-moss-600">Inspire.</h2>
-          <p class="mt-6 max-w-md text-moss-600">
-            At Wild Landscape Co. we begin by inspiring your vision. Through
-            creative design consultations, we bring your ideas to life,
-            offering innovative concepts tailored to your style and space. We
-            focus on transforming your dreams into a reality, blending
-            nature with elegance.
-          </p>
-        </div>
-        <GalleryTile
-          href={`/projects/${heroTile.slug}`}
-          imageUrl={heroTile.imageUrl}
-          imageAlt={heroTile.imageAlt}
-          label={heroTile.location}
+    <section data-reveal class="mt-8 mb-12 sm:mb-16">
+      <a
+        href={`/projects/${heroTile.slug}`}
+        class="group relative isolate block overflow-hidden bg-moss-900 focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-moss-500"
+      >
+        <img
+          src={heroTile.imageUrl}
+          alt={heroTile.imageAlt}
+          class="aspect-[4/3] w-full object-cover opacity-85 transition duration-700 group-hover:scale-[1.02] group-hover:opacity-100 sm:aspect-[16/7] lg:aspect-[21/8]"
         />
-      </div>
+        <div class="absolute inset-0 bg-moss-900/45 transition-colors duration-500 group-hover:bg-moss-900/55" />
+        <div class="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
+          <p class="text-xs font-semibold tracking-brand uppercase text-white/80">
+            Featured project
+          </p>
+          <h2 class="mt-4 max-w-4xl font-display text-4xl leading-tight text-white [text-shadow:0_2px_18px_rgba(0,0,0,0.45)] sm:text-6xl lg:text-7xl">
+            {heroTile.title}
+          </h2>
+          {heroTile.location && (
+            <p class="mt-4 text-sm font-medium tracking-brand uppercase text-white/90">
+              {heroTile.location}
+            </p>
+          )}
+        </div>
+      </a>
     </section>
   )}
 
-  <section data-reveal class="mx-auto max-w-6xl px-6 pb-4">
+  <section data-reveal class="mx-auto max-w-6xl px-6 pb-16">
     <div class="columns-1 gap-6 sm:columns-2">
       {restTiles.map((project, i) => (
         <>
@@ -93,17 +94,7 @@ const socialImages = projects.slice(0, 4).map((p) => ({
             imageAlt={project.imageAlt}
             label={project.location}
           />
-          {i === 0 && (
-            <div class="mb-6 flex h-full [break-inside:avoid] items-center rounded-2xl bg-moss-50 p-8">
-              <p class="text-moss-600">
-                We bring your design to life with expert craftsmanship. Our
-                skilled team handles every aspect of construction, from
-                hardscaping to planting, to the highest standard. We pride
-                ourselves on quality, precision, and attention to detail
-                throughout the build.
-              </p>
-            </div>
-          )}
+      
         </>
       ))}
     </div>

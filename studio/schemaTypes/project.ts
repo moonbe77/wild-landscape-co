@@ -1,20 +1,28 @@
-import { defineField, defineType } from "sanity";
+import { defineArrayMember, defineField, defineType } from "sanity";
 
 export default defineType({
   name: "project",
   title: "Project",
   type: "document",
+  groups: [
+    { name: "overview", title: "Overview", default: true },
+    { name: "details", title: "Project details" },
+    { name: "location", title: "Location" },
+    { name: "media", title: "Images" },
+  ],
   fields: [
     defineField({
       name: "title",
       title: "Title",
       type: "string",
+      group: "overview",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
+      group: "overview",
       options: { source: "title", maxLength: 96 },
       validation: (Rule) => Rule.required(),
     }),
@@ -22,6 +30,7 @@ export default defineType({
       name: "category",
       title: "Category",
       type: "string",
+      group: "overview",
       options: {
         list: [
           { title: "Garden Design", value: "garden-design" },
@@ -33,21 +42,71 @@ export default defineType({
     }),
     defineField({
       name: "location",
-      title: "Location",
+      title: "Display location",
       description: "e.g. Buderim, Sunshine Coast",
       type: "string",
+      group: "location",
     }),
     defineField({
       name: "summary",
-      title: "Summary",
+      title: "Project teaser",
+      description: "A short summary for project cards and search previews.",
       type: "text",
       rows: 3,
+      group: "overview",
       validation: (Rule) => Rule.max(280),
+    }),
+    defineField({
+      name: "projectScope",
+      title: "Project scope",
+      description: "A concise outline of what this project included.",
+      type: "text",
+      rows: 3,
+      group: "details",
+      validation: (Rule) => Rule.max(500),
+    }),
+    defineField({
+      name: "services",
+      title: "Services",
+      description: "The services delivered for this project, e.g. Deck Design & Build.",
+      type: "array",
+      group: "details",
+      of: [defineArrayMember({ type: "string" })],
+      options: { layout: "tags" },
+      validation: (Rule) => Rule.max(6).unique(),
+    }),
+    defineField({
+      name: "propertyDescription",
+      title: "Property description",
+      description: "The full story of the finished outdoor space.",
+      type: "text",
+      rows: 6,
+      group: "details",
+      validation: (Rule) => Rule.max(1500),
+    }),
+    defineField({
+      name: "keyFeatures",
+      title: "Key features",
+      description: "One concise feature per item.",
+      type: "array",
+      group: "details",
+      of: [defineArrayMember({ type: "string" })],
+      options: { layout: "tags" },
+      validation: (Rule) => Rule.max(12).unique(),
+    }),
+    defineField({
+      name: "mapLocation",
+      title: "Map location",
+      description:
+        "Optional approximate pin for the project location. Do not use an exact residential address without approval.",
+      type: "geopoint",
+      group: "location",
     }),
     defineField({
       name: "coverImage",
       title: "Cover image",
       type: "image",
+      group: "media",
       options: { hotspot: true },
       fields: [
         { name: "alt", title: "Alt text", type: "string", validation: (Rule) => Rule.required() },
@@ -58,6 +117,7 @@ export default defineType({
       name: "beforeImage",
       title: "Before image",
       type: "image",
+      group: "media",
       options: { hotspot: true },
       fields: [{ name: "alt", title: "Alt text", type: "string" }],
     }),
@@ -65,6 +125,7 @@ export default defineType({
       name: "afterImage",
       title: "After image",
       type: "image",
+      group: "media",
       options: { hotspot: true },
       fields: [{ name: "alt", title: "Alt text", type: "string" }],
     }),
@@ -72,23 +133,26 @@ export default defineType({
       name: "gallery",
       title: "Gallery",
       type: "array",
+      group: "media",
       of: [
-        {
+        defineArrayMember({
           type: "image",
           options: { hotspot: true },
           fields: [{ name: "alt", title: "Alt text", type: "string" }],
-        },
+        }),
       ],
     }),
     defineField({
       name: "completedAt",
-      title: "Completed",
+      title: "Completion date",
       type: "date",
+      group: "details",
     }),
     defineField({
       name: "featured",
       title: "Featured on home page",
       type: "boolean",
+      group: "overview",
       initialValue: false,
     }),
   ],

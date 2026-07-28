@@ -10,6 +10,12 @@ export interface SanityImage {
   crop?: { top: number; bottom: number; left: number; right: number };
 }
 
+export interface SanityGeopoint {
+  lat: number;
+  lng: number;
+  alt?: number;
+}
+
 export interface Project {
   _id: string;
   title: string;
@@ -17,6 +23,11 @@ export interface Project {
   category?: string;
   location?: string;
   summary?: string;
+  projectScope?: string;
+  services?: string[];
+  propertyDescription?: string;
+  keyFeatures?: string[];
+  mapLocation?: SanityGeopoint;
   coverImage?: SanityImage;
   beforeImage?: SanityImage;
   afterImage?: SanityImage;

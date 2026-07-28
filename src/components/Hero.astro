@@ -1,23 +1,23 @@
 ---
 interface Cta {
-  label: string;
-  href: string;
+	label: string;
+	href: string;
 }
 
 interface Props {
-  eyebrow: string;
-  title: string;
-  videoSrc: string;
-  posterSrc?: string;
-  primaryCta: Cta;
-  secondaryCta: Cta;
+	eyebrow: string;
+	title: string;
+	videoSrc: string;
+	posterSrc?: string;
+	primaryCta: Cta;
+	secondaryCta: Cta;
 }
 
 const { eyebrow, title, videoSrc, posterSrc, primaryCta, secondaryCta } =
-  Astro.props;
+	Astro.props;
 ---
 
-<section class="relative isolate flex min-h-[92vh] items-end overflow-hidden bg-moss-900">
+<section class="relative isolate flex min-h-screen items-end overflow-hidden bg-moss-900">
   <video
     class="absolute inset-0 -z-20 h-full w-full object-cover"
     autoplay
